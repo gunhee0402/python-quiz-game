@@ -1,4 +1,4 @@
-# 나만의 파이썬 콘솔 퀴즈 게임
+# 나만의 자동차 상식 콘솔 퀴즈 게임
 
 터미널 환경에서 즐기는 파이썬 기반의 콘솔 퀴즈 게임 프로그램입니다.  
 객체지향 프로그래밍(OOP) 개념을 적용하여 `Quiz`와 `QuizGame` 클래스로 구조화하였으며, JSON 파일 저장 방식으로 데이터 영속성을 구현했습니다.
@@ -34,11 +34,17 @@ python3 main.py
  
  ## 파일 구조
  ```bash
- python-quiz-game/
-├── main.py          # 퀴즈 게임 메인 프로그램 (Quiz, QuizGame 클래스)
-├── state.json       # 퀴즈 및 최고 점수 저장 데이터 파일 (자동 생성)
-├── README.md        # 프로젝트 설명서
-└── .gitignore       # Git 제외 설정 파일
+python-quiz-game/
+├── main.py              # 퀴즈 게임 메인 프로그램 (Quiz, QuizGame 클래스)
+├── state.json           # 퀴즈 및 최고 점수 저장 데이터 파일 (자동 생성)
+├── README.md            # 프로젝트 설명서
+├── .gitignore           # Git 제외 설정 파일
+└── docs/
+    └── screenshots/     # 실행 화면 스크린샷 폴더
+        ├── menu.png
+        ├── play.png
+        ├── add_quiz.png
+        └── score.png
 ```
 
 ## 데이터 파일 설명 (state.json)
@@ -51,12 +57,12 @@ python3 main.py
         {
             "question": "다음 중 이탈리아의 유명슈퍼카 브랜드가 아닌곳은?",
             "choices": [
-                "Guido van Rossum",
-                "Elon Musk",
-                "Steve Jobs",
-                "Bill Gates"
+                "페라리 (Ferrari)",
+                "람보르기니 (Lamborghini))",
+                "포르쉐 (Porsche)",
+                "마세라티 (Maserati)"
             ],
-            "answer": 1
+            "answer": 3
         }
     ],
     "best_score": 5

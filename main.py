@@ -9,9 +9,9 @@ class Quiz:
         self.question = question
         self.choices = choices
         self.answer = answer
-        self.category = category      # [보너스 4] 카테고리
-        self.difficulty = difficulty  # [보너스 4] 난이도
-        self.hint = hint              # [보너스 2] 힌트
+        self.category = category      # 카테고리
+        self.difficulty = difficulty  # 난이도
+        self.hint = hint              # 힌트
 
     def to_dict(self):
         return {
@@ -69,7 +69,7 @@ class QuizGame:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
     def init_default_quizzes(self):
-        """기본 퀴즈 데이터 초기화"""
+        """기본 퀴즈 데이터 초기화 (6개 문항)"""
         default_data = [
             {
                 "question": "다음 중 이탈리아의 유명 슈퍼카 브랜드가 아닌 곳은?",
@@ -80,8 +80,40 @@ class QuizGame:
                 "hint": "독일 슈투트가르트에 본사를 둔 브랜드입니다."
             },
             {
+                "question": "세계 최초로 컨베이어 벨트 양산 시스템을 도입하여 대량생산을 시작한 자동차 회사는?",
+                "choices": ["포드 (Ford)", "GM (General Motors)", "벤츠 (Mercedes-Benz)", "토요타 (Toyota)"],
+                "answer": 1,
+                "category": "역사",
+                "difficulty": "EASY",
+                "hint": "모델 T를 제작한 미국 브랜드입니다."
+            },
+            {
+                "question": "현대자동차 그룹의 독립 럭셔리 독자 브랜드 이름은 무엇인가요?",
+                "choices": ["렉서스 (Lexus)", "제네시스 (Genesis)", "인피니티 (Infiniti)", "아큐라 (Acura)"],
+                "answer": 2,
+                "category": "브랜드",
+                "difficulty": "EASY",
+                "hint": "G80, GV80 등을 생산하는 브랜드입니다."
+            },
+            {
+                "question": "전기차 제조사 테슬라(Tesla)의 현 최고경영자(CEO)는 누구인가요?",
+                "choices": ["빌 게이츠 (Bill Gates)", "스티브 잡스 (Steve Jobs)", "일론 마스크 (Elon Musk)", "제프 베조스 (Jeff Bezos)"],
+                "answer": 3,
+                "category": "상식",
+                "difficulty": "EASY",
+                "hint": "스페이스X의 창업자이기도 합니다."
+            },
+            {
+                "question": "독일의 대표 프리미엄 3사(독일 3사)에 속하지 않는 브랜드는?",
+                "choices": ["메르세데스-벤츠", "BMW", "아우디", "볼보"],
+                "answer": 4,
+                "category": "브랜드",
+                "difficulty": "EASY",
+                "hint": "스웨덴 태생의 안전으로 유명한 브랜드입니다."
+            },
+            {
                 "question": "세계에서 가장 빠른 양산차 타이틀을 가졌던 부가티의 대표 모델은?",
-                "choices": ["베이론 (Veyron)", "아벤타도르 (Aventador)", "911 GT3", "에어라 (Huayra)"],
+                "choices": ["베이론 (Veyron)", "아벤타도르 (Aventador)", "911 GT3", "파가니 와이라"],
                 "answer": 1,
                 "category": "상식",
                 "difficulty": "HARD",
@@ -98,7 +130,7 @@ class QuizGame:
 
         print("\n=== 퀴즈 게임을 시작합니다! ===")
         score = 0
-        wrong_quizzes = []  # [보너스 3] 오답 노트 목록
+        wrong_quizzes = []
 
         # [보너스 1] 문제 순서 무작위 섞기 (Random Shuffle)
         play_quizzes = self.quizzes.copy()
@@ -109,7 +141,7 @@ class QuizGame:
             print(f"\n[문제 {idx}/{len(play_quizzes)}] [{quiz.category} | 난이도: {quiz.difficulty}] {quiz.question}")
             for c_idx, choice in enumerate(quiz.choices, 1):
                 print(f"  {c_idx}. {choice}")
-            print("  H. 힌트 보기")  # [보너스 2] 힌트 옵션
+            print("  H. 힌트 보기")
 
             while True:
                 user_input = input("정답 번호 선택 (1-4 / H:힌트): ").strip()
@@ -129,12 +161,12 @@ class QuizGame:
                         score += 1
                     else:
                         print(f"❌ 오답입니다. (정답: {quiz.answer}번)")
-                        wrong_quizzes.append((quiz, choice_num))  # 오답 노터 기록
+                        wrong_quizzes.append((quiz, choice_num))
                     break
                 else:
                     print("1부터 4 사이의 숫자를 입력해 주세요.")
 
-        # [보너스 5] 정답률 계산 및 등급 산정
+        # [보너스 5] 정답률 및 등급 계산
         total = len(play_quizzes)
         rate = (score / total) * 100
         grade = "A" if rate >= 80 else ("B" if rate >= 60 else "F")

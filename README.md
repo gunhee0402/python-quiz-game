@@ -92,3 +92,22 @@ git push origin main
 ```
 
 Clone Test
+
+---
+
+## 제출 증빙 스크린샷
+
+### 1. 개발 환경 설정
+![개발 환경](docs/screenshots/env.png)
+
+### 2. 프로그램 실행 결과
+| 메인 메뉴 | 퀴즈 풀기 |
+| :---: | :---: |
+| ![메인 메뉴](docs/screenshots/menu.png) | ![퀴즈 풀기](docs/screenshots/play.png) |
+
+| 퀴즈 추가 | 점수 확인 |
+| :---: | :---: |
+| ![퀴즈 추가](docs/screenshots/add_quiz.png) | ![점수 확인](docs/screenshots/score.png) |
+
+### 3. Git Log 그래프 (`git log --oneline --graph`)
+![Git Log](docs/screenshots/git_log.png)

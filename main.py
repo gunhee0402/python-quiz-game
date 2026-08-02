@@ -1,216 +1,246 @@
 import json
 import os
+import random
 
-# ==========================================
-# 1. Quiz 클래스 (개별 문제 틀)
-# ==========================================
+
 class Quiz:
-    def __init__(self, question, choices, answer):
-        self.question = question   # 질문 내용
-        self.choices = choices     # 보기 4개 (리스트)
-        self.answer = answer       # 정답 번호 (1~4)
-
-    def display(self, number):
-        """문제를 화면에 출력"""
-        print(f"\n[문제 {number}] {self.question}")
-        for i, choice in enumerate(self.choices, 1):
-            print(f"  {i}. {choice}")
-
-    def is_correct(self, user_answer):
-        """정답 제출 확인"""
-        return self.answer == user_answer
+    """단일 퀴즈 문제를 관리하는 클래스"""
+    def __init__(self, question, choices, answer, category="일반", difficulty="EASY", hint=""):
+        self.question = question
+        self.choices = choices
+        self.answer = answer
+        self.category = category      # [보너스 4] 카테고리
+        self.difficulty = difficulty  # [보너스 4] 난이도
+        self.hint = hint              # [보너스 2] 힌트
 
     def to_dict(self):
-        """JSON 저장을 위해 딕셔너리로 변환"""
         return {
             "question": self.question,
             "choices": self.choices,
-            "answer": self.answer
+            "answer": self.answer,
+            "category": self.category,
+            "difficulty": self.difficulty,
+            "hint": self.hint
         }
 
-
-# ==========================================
-# 2. 공통 예외 처리 함수 (안전한 숫자 입력)
-# ==========================================
-def get_valid_input(prompt, min_val, max_val):
-    while True:
-        try:
-            raw_input = input(prompt).strip()
-            if not raw_input:
-                print("⚠️ 빈 입력입니다. 다시 입력해주세요.")
-                continue
-            
-            value = int(raw_input)
-            if min_val <= value <= max_val:
-                return value
-            else:
-                print(f"⚠️ {min_val}~{max_val} 사이의 숫자를 입력하세요.")
-        except ValueError:
-            print("⚠️ 숫자로만 입력해주세요.")
-        except (KeyboardInterrupt, EOFError):
-            print("\n\n⚠️ 프로그램이 안전하게 종료되었습니다.")
-            exit(0)
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            question=data["question"],
+            choices=data["choices"],
+            answer=data["answer"],
+            category=data.get("category", "일반"),
+            difficulty=data.get("difficulty", "EASY"),
+            hint=data.get("hint", "등록된 힌트가 없습니다.")
+        )
 
 
-# ==========================================
-# 3. QuizGame 클래스 (전체 게임 관리)
-# ==========================================
 class QuizGame:
-    def __init__(self, filename="state.json"):
-        self.filename = filename
+    """퀴즈 게임의 로직과 데이터를 관리하는 클래스"""
+    def __init__(self, filepath="state.json"):
+        self.filepath = filepath
         self.quizzes = []
         self.best_score = 0
-        self.load_data()
+        self.load_state()
 
-    def get_default_quizzes(self):
-        """자동차 상식/브랜드/모델 주제 기본 퀴즈 5개"""
-        return [
-            Quiz(
-                "다음 중 이탈리아의 유명 슈퍼카 브랜드가 아닌 곳은?", 
-                ["페라리 (Ferrari)", "람보르기니 (Lamborghini)", "포르쉐 (Porsche)", "마세라티 (Maserati)"], 
-                3
-            ),
-            Quiz(
-                "세계 최초로 대량 생산(컨베이어 벨트) 방식을 도입한 자동차는?", 
-                ["포드 모델 T", "벤츠 패턴트 모토바겐", "폭스바겐 비틀", "지프 CJ"], 
-                1
-            ),
-            Quiz(
-                "현대자동차의 독자적인 프리미엄 럭셔리 브랜드 명칭은?", 
-                ["N 브랜드", "제네시스 (GENESIS)", "아이오닉 (IONIQ)", "알파로메오"], 
-                2
-            ),
-            Quiz(
-                "전기차 기업 테슬라(Tesla)의 CEO이자 대표 인물은?", 
-                ["팀 쿡", "일론 머스크", "마크 저커버그", "샘 올트먼"], 
-                2
-            ),
-            Quiz(
-                "다음 중 독일 3대 프리미엄 완성차 브랜드(독삼사)에 해당하지 않는 곳은?", 
-                ["메르세데스-벤츠", "BMW", "아우디", "볼보"], 
-                4
-            )
-        ]
-
-    def load_data(self):
-        """state.json 파일 읽기 및 예외 처리"""
-        if not os.path.exists(self.filename):
-            self.quizzes = self.get_default_quizzes()
-            self.save_data()
+    def load_state(self):
+        """state.json 파일에서 데이터 불러오기"""
+        if not os.path.exists(self.filepath):
+            self.init_default_quizzes()
+            self.save_state()
             return
 
         try:
-            with open(self.filename, 'r', encoding='utf-8') as f:
+            with open(self.filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
+                self.quizzes = [Quiz.from_dict(q) for q in data.get("quizzes", [])]
                 self.best_score = data.get("best_score", 0)
-                self.quizzes = [
-                    Quiz(q["question"], q["choices"], q["answer"]) 
-                    for q in data.get("quizzes", [])
-                ]
-            print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {self.best_score}점)")
-        except Exception:
-            print("⚠️ 데이터 파일이 손상되었습니다. 기본 데이터로 초기화합니다.")
-            self.quizzes = self.get_default_quizzes()
-            self.best_score = 0
-            self.save_data()
+        except Exception as e:
+            print(f"\n[!] 데이터 파일 로드 중 오류 발생: {e}")
+            self.init_default_quizzes()
 
-    def save_data(self):
-        """state.json 파일에 저장"""
+    def save_state(self):
+        """state.json 파일에 데이터 저장하기"""
         data = {
             "quizzes": [q.to_dict() for q in self.quizzes],
             "best_score": self.best_score
         }
-        with open(self.filename, 'w', encoding='utf-8') as f:
+        with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
-    def play_quiz(self):
-        """1. 퀴즈 풀기"""
+    def init_default_quizzes(self):
+        """기본 퀴즈 데이터 초기화"""
+        default_data = [
+            {
+                "question": "다음 중 이탈리아의 유명 슈퍼카 브랜드가 아닌 곳은?",
+                "choices": ["페라리 (Ferrari)", "람보르기니 (Lamborghini)", "포르쉐 (Porsche)", "마세라티 (Maserati)"],
+                "answer": 3,
+                "category": "브랜드",
+                "difficulty": "EASY",
+                "hint": "독일 슈투트가르트에 본사를 둔 브랜드입니다."
+            },
+            {
+                "question": "세계에서 가장 빠른 양산차 타이틀을 가졌던 부가티의 대표 모델은?",
+                "choices": ["베이론 (Veyron)", "아벤타도르 (Aventador)", "911 GT3", "에어라 (Huayra)"],
+                "answer": 1,
+                "category": "상식",
+                "difficulty": "HARD",
+                "hint": "이름이 '베'로 시작합니다."
+            }
+        ]
+        self.quizzes = [Quiz.from_dict(q) for q in default_data]
+
+    def play(self):
+        """퀴즈 풀기 진행"""
         if not self.quizzes:
-            print("\n⚠️ 등록된 퀴즈가 없습니다.")
+            print("\n등록된 퀴즈가 없습니다. 퀴즈를 먼저 추가해주세요!")
             return
 
-        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        print("\n=== 퀴즈 게임을 시작합니다! ===")
         score = 0
+        wrong_quizzes = []  # [보너스 3] 오답 노트 목록
 
-        for idx, quiz in enumerate(self.quizzes, 1):
-            quiz.display(idx)
-            user_ans = get_valid_input("정답 입력 (1-4): ", 1, 4)
-            if quiz.is_correct(user_ans):
-                print("✅ 정답입니다!")
-                score += 1
-            else:
-                print(f"❌ 오답입니다! (정답: {quiz.answer}번)")
+        # [보너스 1] 문제 순서 무작위 섞기 (Random Shuffle)
+        play_quizzes = self.quizzes.copy()
+        random.shuffle(play_quizzes)
 
-        print(f"\n========================================")
-        print(f"🏆 결과: {len(self.quizzes)}문제 중 {score}문제 정답!")
+        for idx, quiz in enumerate(play_quizzes, 1):
+            # [보너스 4] 카테고리 및 난이도 출력
+            print(f"\n[문제 {idx}/{len(play_quizzes)}] [{quiz.category} | 난이도: {quiz.difficulty}] {quiz.question}")
+            for c_idx, choice in enumerate(quiz.choices, 1):
+                print(f"  {c_idx}. {choice}")
+            print("  H. 힌트 보기")  # [보너스 2] 힌트 옵션
+
+            while True:
+                user_input = input("정답 번호 선택 (1-4 / H:힌트): ").strip()
+                
+                if user_input.upper() == 'H':
+                    print(f"💡 힌트: {quiz.hint}")
+                    continue
+
+                if not user_input.isdigit():
+                    print("숫자 1~4 또는 'H'를 입력해 주세요.")
+                    continue
+
+                choice_num = int(user_input)
+                if 1 <= choice_num <= 4:
+                    if choice_num == quiz.answer:
+                        print("⭕ 정답입니다!")
+                        score += 1
+                    else:
+                        print(f"❌ 오답입니다. (정답: {quiz.answer}번)")
+                        wrong_quizzes.append((quiz, choice_num))  # 오답 노터 기록
+                    break
+                else:
+                    print("1부터 4 사이의 숫자를 입력해 주세요.")
+
+        # [보너스 5] 정답률 계산 및 등급 산정
+        total = len(play_quizzes)
+        rate = (score / total) * 100
+        grade = "A" if rate >= 80 else ("B" if rate >= 60 else "F")
+
+        print("\n=========================")
+        print(f"🎉 최종 점수: {score} / {total} 점")
+        print(f"📊 정답률: {rate:.1f}% (등급: {grade})")
+        print("=========================")
+
+        # [보너스 3] 오답 노트 출력
+        if wrong_quizzes:
+            print("\n📝 [오답 노트] 틀린 문제를 확인하세요:")
+            for q, my_ans in wrong_quizzes:
+                print(f"- {q.question}")
+                print(f"  제출한 답: {my_ans}번 / 정답: {q.answer}번")
+
         if score > self.best_score:
-            print("🎉 축하합니다! 새로운 최고 점수입니다!")
+            print(f"\n🎊 축하합니다! 최고 점수를 갱신하셨습니다! ({self.best_score}점 ➡️ {score}점)")
             self.best_score = score
-            self.save_data()
-        print(f"========================================")
+            self.save_state()
 
     def add_quiz(self):
-        """2. 퀴즈 추가"""
-        print("\n📌 새로운 퀴즈를 추가합니다.")
-        question = input("문제를 입력하세요: ").strip()
+        """새로운 퀴즈 추가하기"""
+        print("\n=== 새 퀴즈 추가 ===")
+        question = input("문제 내용 입력: ").strip()
         while not question:
-            print("⚠️ 문제는 빈 값일 수 없습니다.")
-            question = input("문제를 입력하세요: ").strip()
+            print("문제 내용을 입력해야 합니다.")
+            question = input("문제 내용 입력: ").strip()
 
         choices = []
         for i in range(1, 5):
-            choice = input(f"선택지 {i}: ").strip()
+            choice = input(f"선택지 {i} 입력: ").strip()
             while not choice:
-                print("⚠️ 선택지는 빈 값일 수 없습니다.")
-                choice = input(f"선택지 {i}: ").strip()
+                print("선택지를 입력해야 합니다.")
+                choice = input(f"선택지 {i} 입력: ").strip()
             choices.append(choice)
 
-        answer = get_valid_input("정답 번호 (1-4): ", 1, 4)
-        
-        new_quiz = Quiz(question, choices, answer)
+        while True:
+            ans_input = input("정답 번호 입력 (1-4): ").strip()
+            if ans_input.isdigit() and 1 <= int(ans_input) <= 4:
+                answer = int(ans_input)
+                break
+            print("1에서 4 사이의 올바른 숫자를 입력해 주세요.")
+
+        category = input("카테고리 입력 (예: 브랜드, 상식 / Enter 시 '일반'): ").strip() or "일반"
+        difficulty = input("난이도 입력 (EASY / HARD / Enter 시 'EASY'): ").strip().upper() or "EASY"
+        hint = input("힌트 입력 (없을 경우 Enter): ").strip() or "등록된 힌트가 없습니다."
+
+        new_quiz = Quiz(question, choices, answer, category, difficulty, hint)
         self.quizzes.append(new_quiz)
-        self.save_data()
-        print("\n✅ 퀴즈가 성공적으로 추가되었습니다!")
+        self.save_state()
+        print("\n✅ 새로운 퀴즈가 성공적으로 등록되었습니다!")
 
-    def show_quiz_list(self):
-        """3. 퀴즈 목록 보기"""
-        print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
-        print("-" * 40)
-        for idx, quiz in enumerate(self.quizzes, 1):
-            print(f"[{idx}] {quiz.question}")
-        print("-" * 40)
+    def show_list(self):
+        """등록된 퀴즈 목록 보기"""
+        print("\n=== 등록된 퀴즈 목록 ===")
+        if not self.quizzes:
+            print("등록된 퀴즈가 없습니다.")
+            return
 
-    def show_score(self):
-        """4. 최고 점수 확인"""
+        for idx, q in enumerate(self.quizzes, 1):
+            print(f"\n{idx}. [{q.category} | {q.difficulty}] {q.question} (정답: {q.answer}번)")
+            for c_idx, choice in enumerate(q.choices, 1):
+                print(f"   {c_idx}) {choice}")
+            print(f"   💡 힌트: {q.hint}")
+
+    def show_best_score(self):
+        """최고 점수 보기"""
         print(f"\n🏆 현재 최고 점수: {self.best_score}점")
 
-    def run(self):
-        """게임 메인 메뉴 실행"""
-        while True:
-            print("\n========================================")
-            print("        🏎️ 나만의 자동차 퀴즈 게임 🏎️")
-            print("========================================")
+
+def main():
+    game = QuizGame()
+
+    while True:
+        try:
+            print("\n=========================")
+            print("  자동차 상식 퀴즈 게임  ")
+            print("=========================")
             print("1. 퀴즈 풀기")
             print("2. 퀴즈 추가")
-            print("3. 퀴즈 목록")
-            print("4. 점수 확인")
+            print("3. 퀴즈 목록 보기")
+            print("4. 최고 점수 확인")
             print("5. 종료")
-            print("========================================")
+            print("=========================")
             
-            choice = get_valid_input("선택: ", 1, 5)
-            
-            if choice == 1:
-                self.play_quiz()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.show_quiz_list()
-            elif choice == 4:
-                self.show_score()
-            elif choice == 5:
+            choice = input("원하는 메뉴 번호를 입력하세요: ").strip()
+
+            if choice == "1":
+                game.play()
+            elif choice == "2":
+                game.add_quiz()
+            elif choice == "3":
+                game.show_list()
+            elif choice == "4":
+                game.show_best_score()
+            elif choice == "5":
                 print("\n게임을 종료합니다. 이용해 주셔서 감사합니다!")
                 break
+            else:
+                print("\n[!] 올바른 메뉴 번호(1~5)를 입력해 주세요.")
+
+        except KeyboardInterrupt:
+            print("\n\n[!] 강제 종료 신호(Ctrl+C)가 감지되었습니다. 게임을 안전하게 종료합니다.")
+            break
+
 
 if __name__ == "__main__":
-    game = QuizGame()
-    game.run()
+    main()

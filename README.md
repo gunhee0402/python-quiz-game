@@ -65,17 +65,98 @@ python-quiz-game/
 {
     "quizzes": [
         {
-            "question": "다음 중 이탈리아의 유명슈퍼카 브랜드가 아닌곳은?",
+            "question": "다음 중 이탈리아의 유명 슈퍼카 브랜드가 아닌 곳은?",
             "choices": [
                 "페라리 (Ferrari)",
-                "람보르기니 (Lamborghini))",
+                "람보르기니 (Lamborghini)",
                 "포르쉐 (Porsche)",
                 "마세라티 (Maserati)"
             ],
-            "answer": 3
+            "answer": 3,
+            "category": "브랜드",
+            "difficulty": "EASY",
+            "hint": "독일 슈투트가르트에 본사를 둔 브랜드입니다."
+        },
+        {
+            "question": "세계 최초로 컨베이어 벨트 양산 시스템을 도입하여 대량생산을 시작한 자동차 회사는?",
+            "choices": [
+                "포드 (Ford)",
+                "GM (General Motors)",
+                "벤츠 (Mercedes-Benz)",
+                "토요타 (Toyota)"
+            ],
+            "answer": 1,
+            "category": "역사",
+            "difficulty": "EASY",
+            "hint": "모델 T를 제작한 미국 브랜드입니다."
+        },
+        {
+            "question": "현대자동차 그룹의 독립 럭셔리 독자 브랜드 이름은 무엇인가요?",
+            "choices": [
+                "렉서스 (Lexus)",
+                "제네시스 (Genesis)",
+                "인피니티 (Infiniti)",
+                "아큐라 (Acura)"
+            ],
+            "answer": 2,
+            "category": "브랜드",
+            "difficulty": "EASY",
+            "hint": "G80, GV80 등을 생산하는 브랜드입니다."
+        },
+        {
+            "question": "전기차 제조사 테슬라(Tesla)의 현 최고경영자(CEO)는 누구인가요?",
+            "choices": [
+                "빌 게이츠 (Bill Gates)",
+                "스티브 잡스 (Steve Jobs)",
+                "일론 마스크 (Elon Musk)",
+                "제프 베조스 (Jeff Bezos)"
+            ],
+            "answer": 3,
+            "category": "상식",
+            "difficulty": "EASY",
+            "hint": "스페이스X의 창업자이기도 합니다."
+        },
+        {
+            "question": "독일의 대표 프리미엄 3사(독일 3사)에 속하지 않는 브랜드는?",
+            "choices": [
+                "메르세데스-벤츠",
+                "BMW",
+                "아우디",
+                "볼보"
+            ],
+            "answer": 4,
+            "category": "브랜드",
+            "difficulty": "EASY",
+            "hint": "스웨덴 태생의 안전으로 유명한 브랜드입니다."
+        },
+        {
+            "question": "세계에서 가장 빠른 양산차 타이틀을 가졌던 부가티의 대표 모델은?",
+            "choices": [
+                "베이론 (Veyron)",
+                "아벤타도르 (Aventador)",
+                "911 GT3",
+                "파가니 와이라"
+            ],
+            "answer": 1,
+            "category": "상식",
+            "difficulty": "HARD",
+            "hint": "이름이 '베'로 시작합니다."
+        },
+        {
+            "question": "아반떼의 제조사로 옳은 것은?",
+            "choices": [
+                "현대",
+                "기아",
+                "르노",
+                "닛산"
+            ],
+            "answer": 1,
+            "category": "브랜드",
+            "difficulty": "EASY",
+            "hint": "ㅎ으로 시작함"
         }
     ],
-    "best_score": 5
+    "best_score": 6
 }
 ```
 

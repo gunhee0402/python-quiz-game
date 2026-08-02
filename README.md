@@ -35,16 +35,18 @@ python3 main.py
  ## 파일 구조
  ```bash
 python-quiz-game/
-├── main.py              # 퀴즈 게임 메인 프로그램 (Quiz, QuizGame 클래스)
-├── state.json           # 퀴즈 및 최고 점수 저장 데이터 파일 (자동 생성)
+├── main.py              # 퀴즈 게임 메인 프로그램
+├── state.json           # 퀴즈 및 최고 점수 저장 데이터 파일
 ├── README.md            # 프로젝트 설명서
-├── .gitignore           # Git 제외 설정 파일
+├── .gitignore           # Git 추적 제외 설정 파일
 └── docs/
-    └── screenshots/     # 실행 화면 스크린샷 폴더
-        ├── menu.png
-        ├── play.png
-        ├── add_quiz.png
-        └── score.png
+    └── screenshots/     # 증빙 및 실행 화면 스크린샷 폴더
+        ├── add_quiz.png # 퀴즈 추가 스크린샷
+        ├── env.png      # 개발 환경 스크린샷
+        ├── git_log.png  # Git Log 스크린샷
+        ├── menu.png     # 메인 메뉴 스크린샷
+        ├── play.png     # 퀴즈 풀기 스크린샷
+        └── score.png    # 점수 확인 스크린샷
 ```
 
 ## 데이터 파일 설명 (state.json)
@@ -68,32 +70,6 @@ python-quiz-game/
     "best_score": 5
 }
 ```
-
-### 2단계: 커밋 10개 쌓기 (터미널 명령어 실행)
-
-VS Code 터미널 창에 **아래 명령어 묶음을 통째로 복사해서 붙여넣고 Enter**를 누릅니다.  
-(README를 한 단락씩 커밋에 남기면서 자연스럽게 커밋 횟수를 10개 이상 채우는 과정입니다!)
-
-```bash
-git add . && git commit -m "Docs: README 프로젝트 개요 작성"
-echo " " >> README.md
-git add . && git commit -m "Docs: README 퀴즈 주제 선정 이유 작성"
-echo " " >> README.md
-git add . && git commit -m "Docs: README 실행 방법 및 환경 세팅 추가"
-echo " " >> README.md
-git add . && git commit -m "Docs: README 상세 기능 목록 문서화"
-echo " " >> README.md
-git add . && git commit -m "Docs: README 파일 구조 설명 추가"
-echo " " >> README.md
-git add . && git commit -m "Docs: README state.json 데이터 스키마 작성"
-echo " " >> README.md
-git add . && git commit -m "Refactor: 전체 프로젝트 문서화 검토 완료"
-git push origin main
-```
-
-Clone Test
-
----
 
 ## 제출 증빙 스크린샷
 

@@ -238,6 +238,8 @@ class QuizGame:
         print(f"\n🏆 현재 최고 점수: {self.best_score}점")
 
 
+# main.py 하단의 main() 함수를 아래와 같이 수정하세요.
+
 def main():
     game = QuizGame()
 
@@ -264,13 +266,19 @@ def main():
             elif choice == "4":
                 game.show_best_score()
             elif choice == "5":
-                print("\n게임을 종료합니다. 이용해 주셔서 감사합니다!")
+                print("\n[자원 정리] 상태 데이터를 안전하게 저장 중...")
+                game.save_state()  # [보완] 종료 시 안전 저장
+                print("게임을 종료합니다. 이용해 주셔서 감사합니다!")
                 break
             else:
                 print("\n[!] 올바른 메뉴 번호(1~5)를 입력해 주세요.")
 
         except KeyboardInterrupt:
-            print("\n\n[!] 강제 종료 신호(Ctrl+C)가 감지되었습니다. 게임을 안전하게 종료합니다.")
+            # [보완] Ctrl+C 발생 시 자원 정리 및 상태 저장
+            print("\n\n[!] 강제 종료 신호(Ctrl+C)가 감지되었습니다.")
+            print("[자원 정리] 메모리의 최신 데이터를 state.json에 안전하게 비상 저장합니다.")
+            game.save_state()
+            print("게임을 안전하게 종료합니다.")
             break
 
 
